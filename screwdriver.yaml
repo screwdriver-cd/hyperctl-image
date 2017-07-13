@@ -2,20 +2,27 @@ workflow:
     - publish
 
 shared:
-    image: node:6
+    image: centos
 
 jobs:
     main:
         steps:
-            - install: npm install
-            - test: npm test
-
+            # To verify if the hyperctl-download script works
+            - hyperctl-download: bash -xe scripts/hyperctl-download.sh
+            - chmod: chmod +x ./hyperctl
+            - test-hyperctl: ./hyperctl info -h
     publish:
         steps:
-            - install: npm install semantic-release
-            - publish: npm run semantic-release
+            - hyperctl-download: bash -xe scripts/hyperctl-download.sh
+            - chmod: chmod +x ./hyperctl
+            - test-hyperctl: ./hyperctl info -h
+            - setup-ci: git clone https://gist.github.com/3d2388b2a7ba658cdcdaffa8cd874e50.git ci
+            - tag: ./ci/git-tag.sh
+            - release: ./ci/git-release.sh
+        environment:
+            RELEASE_FILE: hyperctl
         secrets:
-            # Publishing to NPM
-            - NPM_TOKEN
             # Pushing tags to Git
-            - GH_TOKEN
+            - GIT_KEY
+            # Pushing releases to GitHub
+            - GITHUB_TOKEN
