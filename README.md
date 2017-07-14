@@ -18,7 +18,7 @@ The above command will create a `hyperctl` binary under current directory.
 Replace the `wget` line (downloading the hyperctl binary from github) in the `Dockerfile` with your local hyperctl binary.
 
 ```bash
-docker build -t scredrivercd/hyperctl-image:tag .
+docker build -t screwdrivercd/hyperctl-image:tag .
 ```
 
 
