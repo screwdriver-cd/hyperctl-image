@@ -1,0 +1,38 @@
+{
+  "id": "builder-ID_WITH_PREFIX",
+  "hostname": "builder-ID_WITH_PREFIX",
+  "resource": {
+    "vcpu": 2,
+    "memory": 2048
+  },
+  "containers": [
+    {
+      "name": "ID_WITH_PREFIX",
+      "image": "BUILD_CONTAINER",
+      "command": [
+        "/opt/sd/tini",
+        "--",
+        "/bin/sh",
+        "-c",
+        "while ! [ -f /opt/sd/launch ]; do sleep 1; done; mkdir -p /sd && . /opt/sd/install_docker.sh && /opt/sd/launch --api-uri API_URI --emitter /opt/sd/emitter BUILD_ID & /opt/sd/logservice --emitter /opt/sd/emitter --api-uri STORE_URI --build BUILD_ID & wait $(jobs -p)"
+      ],
+      "volumes": [
+        {
+          "path": "/opt/sd",
+          "volume": "sdlauncher",
+          "readOnly": false,
+          "detail":
+           {
+           "name": "sdlauncher",
+           "source": "/opt/screwdriver/ID_WITH_PREFIX/sdlauncher",
+           "format" : "vfs"
+           }
+        }
+      ],
+      "envs":  [{
+            "env": "SD_TOKEN",
+            "value": "BUILD_TOKEN"
+        }]
+    }
+  ]
+}
