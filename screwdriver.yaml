@@ -16,7 +16,7 @@ jobs:
             - hyperctl-download: bash -xe scripts/hyperctl-download.sh
             - chmod: chmod +x ./hyperctl
             - test-hyperctl: ./hyperctl info -h
-            - setup-ci: git clone https://gist.github.com/3d2388b2a7ba658cdcdaffa8cd874e50.git ci
+            - setup-ci: sd-step exec core/git "git clone https://gist.github.com/3d2388b2a7ba658cdcdaffa8cd874e50.git ci"
             - tag: ./ci/git-tag.sh
             - release: ./ci/git-release.sh
         environment:
