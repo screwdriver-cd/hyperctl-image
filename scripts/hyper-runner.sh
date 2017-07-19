@@ -86,5 +86,5 @@ sed -e "s|BUILD_CONTAINER|${BUILD_CONTAINER}|g;
 
 log 'Running hyperctl...'
 HYPERCTL=/usr/bin/hyperctl
-res=`$HYPERCTL run --rm -a -p $HYPER_POD_SPEC`
+res=`$HYPERCTL run --cpu=2 --memory=512 --rm -a -p $HYPER_POD_SPEC`
 log "Build finished with exit code $? : $res"
