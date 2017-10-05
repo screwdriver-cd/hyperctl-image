@@ -75,6 +75,9 @@ fi
 # Copy install_docker script to the share mount sdlauncher on the host
 cp /sd/install_docker.sh /opt/sd
 
+HYPERCTL=/usr/bin/hyperctl
+$HYPERCTL pull $BUILD_CONTAINER
+
 HYPER_TEMPLATE="/sd/hyper-pod-template.json"
 HYPER_POD_SPEC="/tmp/hyper-pod.json"
 sed -e "s|BUILD_CONTAINER|${BUILD_CONTAINER}|g;
@@ -85,6 +88,5 @@ sed -e "s|BUILD_CONTAINER|${BUILD_CONTAINER}|g;
         s|ID_WITH_PREFIX|${ID_WITH_PREFIX}|g;" $HYPER_TEMPLATE > $HYPER_POD_SPEC;
 
 log 'Running hyperctl...'
-HYPERCTL=/usr/bin/hyperctl
 res=`$HYPERCTL run --rm -a -p $HYPER_POD_SPEC`
 log "Build finished with exit code $? : $res"
