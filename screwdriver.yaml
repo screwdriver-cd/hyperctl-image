@@ -16,7 +16,7 @@ jobs:
             - hyperctl-download: bash -xe scripts/hyperctl-download.sh
             - chmod: chmod +x ./hyperctl
             - test-hyperctl: ./hyperctl info -h
-            # Dependencies for the gist scripts; should make the scripts share steps in the future
+            # Dependencies for the scripts; should make the scripts share steps in the future
             - install-dependencies: yum install -y git wget openssh-clients bzip2
             - setup-ci: git clone https://github.com/screwdriver-cd/toolbox.git ci
             - tag: ./ci/git-tag.sh
