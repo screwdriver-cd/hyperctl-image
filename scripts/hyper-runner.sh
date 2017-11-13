@@ -96,8 +96,8 @@ sed -e "s|BUILD_CONTAINER|${BUILD_CONTAINER}|g;
         s|STORE_URI|${STORE_URI}|g;
         s|BUILD_TOKEN|${BUILD_TOKEN}|g;
         s|ID_WITH_PREFIX|${ID_WITH_PREFIX}|g;
-        s|CPU|${CPU}|g;
-        s|MEMORY|${MEMORY}|g;" $HYPER_TEMPLATE > $HYPER_POD_SPEC;
+        s|\"CPU\"|${CPU}|g;
+        s|\"MEMORY\"|${MEMORY}|g;" $HYPER_TEMPLATE > $HYPER_POD_SPEC;
 
 log 'Running hyperctl...'
 res=`$HYPERCTL run --rm -a -p $HYPER_POD_SPEC`
