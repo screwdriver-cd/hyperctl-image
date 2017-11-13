@@ -76,12 +76,10 @@ if [[ -z "$BUILD_ID" ]]; then
   printUsage;
 fi
 if [[ -z "$CPU" ]]; then
-  log "--cpu is a required argument";
-  printUsage;
+  CPU=2;
 fi
 if [[ -z "$MEMORY" ]]; then
-  log "--memory is a required argument";
-  printUsage;
+  MEMORY=2048;
 fi
 
 # Copy install_docker script to the share mount sdlauncher on the host
