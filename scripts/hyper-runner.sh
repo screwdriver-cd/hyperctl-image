@@ -12,7 +12,9 @@ function printUsage {
                 --build_id <build_id>
                 --store_uri <store_uri>
                 --id_with_prefix <build_id_with_prefix>
-                --build_token <sd_token>"
+                --build_token <sd_token>
+                --cpu <cpu>
+                --memory <memory>"
   log "$USAGE";
   exit 1;
 }
@@ -38,6 +40,8 @@ while [[ $# -gt 0 ]]
     -s|--store_uri)          STORE_URI="$2"      ; checkVal $1 $2 ; shift 2 ;;
     -i|--id_with_prefix)     ID_WITH_PREFIX="$2" ; checkVal $1 $2 ; shift 2 ;;
     -u|--build_token)        BUILD_TOKEN="$2"    ; checkVal $1 $2 ; shift 2 ;;
+    -cpu|--cpu)              CPU="$2"            ; checkVal $1 $2 ; shift 2 ;;
+    -m|--memory)             MEMORY="$2"         ; checkVal $1 $2 ; shift 2 ;;
     -h|--help)               printUsage                           ; shift 1 ;;
     -*) echo "Unkown argument: \"$key\"" ; printUsage             ; exit 1  ;;
     *)                                                              break   ;;
@@ -71,6 +75,12 @@ if [[ -z "$BUILD_ID" ]]; then
   log "--build_id is a required argument";
   printUsage;
 fi
+if [[ -z "$CPU" ]]; then
+  CPU=2;
+fi
+if [[ -z "$MEMORY" ]]; then
+  MEMORY=2048;
+fi
 
 # Copy install_docker script to the share mount sdlauncher on the host
 cp /sd/install_docker.sh /opt/sd
@@ -85,7 +95,9 @@ sed -e "s|BUILD_CONTAINER|${BUILD_CONTAINER}|g;
         s|BUILD_ID|${BUILD_ID}|g;
         s|STORE_URI|${STORE_URI}|g;
         s|BUILD_TOKEN|${BUILD_TOKEN}|g;
-        s|ID_WITH_PREFIX|${ID_WITH_PREFIX}|g;" $HYPER_TEMPLATE > $HYPER_POD_SPEC;
+        s|ID_WITH_PREFIX|${ID_WITH_PREFIX}|g;
+        s|CPU|${CPU}|g;
+        s|MEMORY|${MEMORY}|g;" $HYPER_TEMPLATE > $HYPER_POD_SPEC;
 
 log 'Running hyperctl...'
 res=`$HYPERCTL run --rm -a -p $HYPER_POD_SPEC`

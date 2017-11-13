@@ -2,8 +2,8 @@
   "id": "builder-ID_WITH_PREFIX",
   "hostname": "builder-ID_WITH_PREFIX",
   "resource": {
-    "vcpu": 2,
-    "memory": 2048
+    "vcpu": "CPU",
+    "memory": "MEMORY"
   },
   "containers": [
     {
