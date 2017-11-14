@@ -82,6 +82,10 @@ if [[ -z "$MEMORY" ]]; then
   MEMORY=2048;
 fi
 
+# Remove leading and trailing quotes from CPU and MEMORY
+CPU=`sed -e 's/^"//' -e 's/"$//' <<< "$CPU"`
+MEMORY=`sed -e 's/^"//' -e 's/"$//' <<< "$MEMORY"`
+
 # Copy install_docker script to the share mount sdlauncher on the host
 cp /sd/install_docker.sh /opt/sd
 
