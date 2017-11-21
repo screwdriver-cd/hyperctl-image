@@ -113,9 +113,6 @@ fi
 CPU=`sed -e 's/^"//' -e 's/"$//' <<< "$CPU"`
 MEMORY=`sed -e 's/^"//' -e 's/"$//' <<< "$MEMORY"`
 
-# Copy over hostname fix script to share mount sdlauncher
-cp /sd/fix-hostname.sh /opt/sd/
-
 # Pull latest docker image
 HYPERCTL=/usr/bin/hyperctl
 # Making sure hyperd is not crashed
