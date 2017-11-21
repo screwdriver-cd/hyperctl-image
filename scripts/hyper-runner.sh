@@ -1,5 +1,32 @@
-#!/bin/bash
+#!/bin/bash -e
 
+# Trap the EXIT SIGNAL and update build status to failure
+trap cleanUp EXIT
+
+function cleanUp {
+    if [ "$?" = "0" ]
+    then
+        echo "exit with exit code 0"
+        exit 0
+    fi
+    echo "exit with non-zero code"
+    updateBuildStatus
+}
+
+function updateBuildStatus {
+    ERROR="$1"
+
+    # If no custom error, then use the generic one
+    if [[ -z "$ERROR" ]]
+    then
+        ERROR="Build failed to start. Please reach out to slack chanel #open-source-sd for help."
+    fi
+
+    URL=$API_URI/v4/builds/$BUILD_ID
+    echo "Updating build status: $URL"
+    curl -X PUT -H "Authorization: Bearer $BUILD_TOKEN" -H "Content-Type: application/json" \
+    -d '{"status": "ABORTED", "statusMessage": "'"$ERROR"'"}' $URL
+}
 
 function log {
   MESSAGE="$1"
@@ -86,11 +113,17 @@ fi
 CPU=`sed -e 's/^"//' -e 's/"$//' <<< "$CPU"`
 MEMORY=`sed -e 's/^"//' -e 's/"$//' <<< "$MEMORY"`
 
-# Copy install_docker script to the share mount sdlauncher on the host
-cp /sd/install_docker.sh /opt/sd
-
+# Pull latest docker image
 HYPERCTL=/usr/bin/hyperctl
-$HYPERCTL pull $BUILD_CONTAINER
+# Making sure hyperd is not crashed
+$HYPERCTL info
+if $HYPERCTL pull $BUILD_CONTAINER
+then
+    echo "Successfully pulled the image"
+else
+    updateBuildStatus "Build failed to start. Please check if your image is valid."
+    exit 0
+fi
 
 HYPER_TEMPLATE="/sd/hyper-pod-template.json"
 HYPER_POD_SPEC="/tmp/hyper-pod.json"
