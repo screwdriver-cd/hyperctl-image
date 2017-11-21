@@ -19,7 +19,7 @@ function updateBuildStatus {
     # If no custom error, then use the generic one
     if [[ -z "$ERROR" ]]
     then
-        ERROR="Build failed to start. Please reach out your cluster admin for help."
+        ERROR="Build failed to start. Please reach out to your cluster admin for help."
     fi
 
     URL=$API_URI/v4/builds/$BUILD_ID
