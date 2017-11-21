@@ -10,7 +10,7 @@ RUN chmod +x /sd/hyper-runner.sh \
     && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2 \
     && apk add --no-cache --update ca-certificates \
     && apk add --virtual .build-dependencies wget \
-    && apk add --update bash sudo \
+    && apk add --update bash sudo curl \
     # Download latest hyperctl binary from github release
     && wget -q -O - https://github.com/screwdriver-cd/hyperctl-image/releases/latest \
      | egrep -o '/screwdriver-cd/hyperctl-image/releases/download/v[0-9.]*/hyperctl' \
