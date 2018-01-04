@@ -25,7 +25,7 @@ function updateBuildStatus {
     URL=$API_URI/v4/builds/$BUILD_ID
     echo "Updating build status: $URL"
     curl -X PUT -H "Authorization: Bearer $BUILD_TOKEN" -H "Content-Type: application/json" \
-    -d '{"status": "ABORTED", "statusMessage": "'"$ERROR"'"}' $URL
+    -d '{"status": "FAILURE", "statusMessage": "'"$ERROR"'"}' $URL
 }
 
 function log {
