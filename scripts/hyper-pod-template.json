@@ -9,7 +9,7 @@
     {
       "name": "ID_WITH_PREFIX",
       "image": "BUILD_CONTAINER",
-      "command": [
+      "entryPoint": [
         "/opt/sd/tini",
         "--",
         "/bin/sh",
