@@ -41,7 +41,8 @@ function printUsage {
                 --id_with_prefix <build_id_with_prefix>
                 --build_token <sd_token>
                 --cpu <cpu>
-                --memory <memory>"
+                --memory <memory>
+                [--build_timeout <seconds>]"
   log "$USAGE";
   exit 1;
 }
@@ -61,14 +62,15 @@ while [[ $# -gt 0 ]]
   key="$1"
 
   case $key in
-    -c|--container)          BUILD_CONTAINER="$2"; checkVal $1 $2 ; shift 2 ;;
-    -a|--api_uri)            API_URI="$2"        ; checkVal $1 $2 ; shift 2 ;;
-    -b|--build_id)           BUILD_ID="$2"       ; checkVal $1 $2 ; shift 2 ;;
-    -s|--store_uri)          STORE_URI="$2"      ; checkVal $1 $2 ; shift 2 ;;
-    -i|--id_with_prefix)     ID_WITH_PREFIX="$2" ; checkVal $1 $2 ; shift 2 ;;
-    -u|--build_token)        BUILD_TOKEN="$2"    ; checkVal $1 $2 ; shift 2 ;;
-    -cpu|--cpu)              CPU="$2"            ; checkVal $1 $2 ; shift 2 ;;
-    -m|--memory)             MEMORY="$2"         ; checkVal $1 $2 ; shift 2 ;;
+    -c|--container)          BUILD_CONTAINER="$2" ; checkVal $1 $2 ; shift 2 ;;
+    -a|--api_uri)            API_URI="$2"         ; checkVal $1 $2 ; shift 2 ;;
+    -b|--build_id)           BUILD_ID="$2"        ; checkVal $1 $2 ; shift 2 ;;
+    -s|--store_uri)          STORE_URI="$2"       ; checkVal $1 $2 ; shift 2 ;;
+    -i|--id_with_prefix)     ID_WITH_PREFIX="$2"  ; checkVal $1 $2 ; shift 2 ;;
+    -u|--build_token)        BUILD_TOKEN="$2"     ; checkVal $1 $2 ; shift 2 ;;
+    -cpu|--cpu)              CPU="$2"             ; checkVal $1 $2 ; shift 2 ;;
+    -m|--memory)             MEMORY="$2"          ; checkVal $1 $2 ; shift 2 ;;
+    -t|--build_timeout)      SD_BUILD_TIMEOUT="$2"; checkVal $1 $2 ; shift 2 ;;
     -h|--help)               printUsage                           ; shift 1 ;;
     -*) echo "Unkown argument: \"$key\"" ; printUsage             ; exit 1  ;;
     *)                                                              break   ;;
@@ -108,6 +110,10 @@ fi
 if [[ -z "$MEMORY" ]]; then
   MEMORY=2048;
 fi
+if [[ -z "$SD_BUILD_TIMEOUT" ]]; then
+  log "defaulting build timeout to 5400s";
+  SD_BUILD_TIMEOUT=5400;
+fi
 
 # Remove leading and trailing quotes from CPU and MEMORY
 CPU=`sed -e 's/^"//' -e 's/"$//' <<< "$CPU"`
@@ -130,6 +136,7 @@ HYPER_POD_SPEC="/tmp/hyper-pod.json"
 sed -e "s|BUILD_CONTAINER|${BUILD_CONTAINER}|g;
         s|API_URI|${API_URI}|g;
         s|BUILD_ID|${BUILD_ID}|g;
+        s|SD_BUILD_TIMEOUT|${SD_BUILD_TIMEOUT}|g;
         s|STORE_URI|${STORE_URI}|g;
         s|BUILD_TOKEN|${BUILD_TOKEN}|g;
         s|ID_WITH_PREFIX|${ID_WITH_PREFIX}|g;
