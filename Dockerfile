@@ -3,6 +3,7 @@ FROM alpine:3.5
 RUN mkdir /sd
 ADD scripts/* /sd/
 RUN chmod +x /sd/hyper-runner.sh \
+    && chmod +x /sd/setup.sh \
     && chmod +x /sd/install_docker.sh \
     && set -x \
     # Alpine ships with musl instead of glibc (this fixes the symlink)

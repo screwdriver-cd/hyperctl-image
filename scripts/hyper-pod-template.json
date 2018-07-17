@@ -14,7 +14,7 @@
         "--",
         "/bin/sh",
         "-c",
-        "while ! [ -f /opt/sd/launch ]; do sleep 1; done; mkdir -p /hab && cp -a /opt/sd/hab/* /hab && mkdir -p /sd && /opt/sd/launch --api-uri API_URI --store-uri STORE_URI --emitter /opt/sd/emitter --build-timeout SD_BUILD_TIMEOUT BUILD_ID & /opt/sd/logservice --emitter /opt/sd/emitter --api-uri STORE_URI --build BUILD_ID & wait $(jobs -p)"
+        "while ! [ -f /opt/sd/setup.sh ]; do sleep 1; done; /opt/sd/setup.sh && (/opt/sd/launch --api-uri API_URI --store-uri STORE_URI --emitter /sd/emitter --build-timeout SD_BUILD_TIMEOUT BUILD_ID & /opt/sd/logservice --emitter /sd/emitter --api-uri STORE_URI --build BUILD_ID & wait $(jobs -p))"
       ],
       "volumes": [
         {
