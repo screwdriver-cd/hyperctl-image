@@ -14,7 +14,7 @@
         "--",
         "/bin/sh",
         "-c",
-        "while ! [ -f /opt/sd/setup.sh ]; do sleep 1; done; /opt/sd/setup.sh && (/opt/sd/launch --api-uri API_URI --store-uri STORE_URI --emitter /sd/emitter --build-timeout SD_BUILD_TIMEOUT BUILD_ID & /opt/sd/logservice --emitter /sd/emitter --api-uri API_URI --store-uri STORE_URI --build BUILD_ID & wait $(jobs -p))"
+        "while ! [ -f /opt/sd/setup.sh ]; do sleep 1; done; /opt/sd/setup.sh && /opt/sd/run.sh \"BUILD_TOKEN\" \"API_URI\" \"STORE_URI\" \"SD_BUILD_TIMEOUT\" \"BUILD_ID\""
       ],
       "volumes": [
         {
@@ -28,11 +28,7 @@
            "format" : "vfs"
            }
         }
-      ],
-      "envs":  [{
-            "env": "SD_TOKEN",
-            "value": "BUILD_TOKEN"
-        }]
+      ]
     }
   ]
 }
