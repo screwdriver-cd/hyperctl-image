@@ -10,10 +10,7 @@
       "name": "ID_WITH_PREFIX",
       "image": "BUILD_CONTAINER",
       "entryPoint": [
-        "/opt/sd/tini",
-        "--",
-        "/bin/sh",
-        "-c",
+        "/opt/sd/launcher_entrypoint.sh",
         "while ! [ -f /opt/sd/setup.sh ]; do sleep 1; done; /opt/sd/setup.sh && /opt/sd/run.sh \"BUILD_TOKEN\" \"API_URI\" \"STORE_URI\" \"SD_BUILD_TIMEOUT\" \"BUILD_ID\""
       ],
       "volumes": [
