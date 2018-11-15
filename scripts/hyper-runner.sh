@@ -1,16 +1,25 @@
 #!/bin/bash -e
 
-# Trap the EXIT SIGNAL and update build status to failure
-trap cleanUp EXIT
+# Trap these SIGNALs to cleanup workspace and update build status to failure
+trap cleanUp HUP INT QUIT TERM EXIT
 
 function cleanUp {
     if [ "$?" = "0" ]
     then
+        cleanupWorkspaces
         echo "exit with exit code 0"
         exit 0
     fi
     echo "exit with non-zero code"
+
+    cleanupWorkspaces
     updateBuildStatus
+}
+
+function cleanupWorkspaces {
+    echo "cleanup used workspaces..."
+    rm -rf /var/sd-workspaces/${ID_WITH_PREFIX}
+    $HYPERCTL rm builder-${ID_WITH_PREFIX}
 }
 
 function updateBuildStatus {
