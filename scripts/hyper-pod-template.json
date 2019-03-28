@@ -11,7 +11,7 @@
       "image": "BUILD_CONTAINER",
       "entryPoint": [
         "/opt/sd/launcher_entrypoint.sh",
-        "while ! [ -f /opt/sd/setup.sh ]; do sleep 1; done; /opt/sd/setup.sh && /opt/sd/run.sh \"BUILD_TOKEN\" \"API_URI\" \"STORE_URI\" \"SD_BUILD_TIMEOUT\" \"BUILD_ID\""
+        "while ! [ -f /opt/sd/setup.sh ]; do sleep 1; done; /opt/sd/setup.sh && /opt/sd/run.sh \"BUILD_TOKEN\" \"API_URI\" \"STORE_URI\" \"SD_BUILD_TIMEOUT\" \"BUILD_ID\" \"UI_URI\""
       ],
       "volumes": [
         {

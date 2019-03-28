@@ -47,6 +47,7 @@ function printUsage {
                 --api_uri <sd_api_uri>
                 --build_id <build_id>
                 --store_uri <store_uri>
+                --ui_uri <ui_uri>
                 --id_with_prefix <build_id_with_prefix>
                 --build_token <sd_token>
                 --cpu <cpu>
@@ -75,6 +76,7 @@ while [[ $# -gt 0 ]]
     -a|--api_uri)            API_URI="$2"         ; checkVal $1 $2 ; shift 2 ;;
     -b|--build_id)           BUILD_ID="$2"        ; checkVal $1 $2 ; shift 2 ;;
     -s|--store_uri)          STORE_URI="$2"       ; checkVal $1 $2 ; shift 2 ;;
+    -ui|--ui_uri)            UI_URI="$2"          ; checkVal $1 $2 ; shift 2 ;;
     -i|--id_with_prefix)     ID_WITH_PREFIX="$2"  ; checkVal $1 $2 ; shift 2 ;;
     -u|--build_token)        BUILD_TOKEN="$2"     ; checkVal $1 $2 ; shift 2 ;;
     -cpu|--cpu)              CPU="$2"             ; checkVal $1 $2 ; shift 2 ;;
@@ -104,6 +106,10 @@ fi
 if [[ -z "$STORE_URI" ]]; then
   log "--store_uri is a required argument";
   printUsage;
+fi
+if [[ -z "$UI_URI" ]]; then
+  log "defaulting ui_uri to http://localhost:4200";
+  UI_URI="http://localhost:4200";
 fi
 if [[ -z "$ID_WITH_PREFIX" ]]; then
   log "--id_with_prefix is a required argument";
@@ -150,6 +156,7 @@ sed -e "s|BUILD_CONTAINER|${BUILD_CONTAINER}|g;
         s|BUILD_ID|${BUILD_ID}|g;
         s|SD_BUILD_TIMEOUT|${SD_BUILD_TIMEOUT}|g;
         s|STORE_URI|${STORE_URI}|g;
+        s|UI_URI|${UI_URI}|g;
         s|BUILD_TOKEN|${BUILD_TOKEN}|g;
         s|ID_WITH_PREFIX|${ID_WITH_PREFIX}|g;
         s|\"CPU\"|${CPU}|g;
