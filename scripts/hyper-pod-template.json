@@ -21,7 +21,7 @@
           "detail":
            {
            "name": "sdlauncher",
-           "source": "/opt/screwdriver/ID_WITH_PREFIX/sdlauncher",
+           "source": "/opt/screwdriver/sdlauncher/LAUNCHER_VERSION/",
            "format" : "vfs"
            }
         }
