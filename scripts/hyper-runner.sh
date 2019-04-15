@@ -52,6 +52,7 @@ function printUsage {
                 --build_token <sd_token>
                 --cpu <cpu>
                 --memory <memory>
+                --launcher_version <launcher_version_tag>
                 [--build_timeout <seconds>]"
   log "$USAGE";
   exit 1;
@@ -82,6 +83,7 @@ while [[ $# -gt 0 ]]
     -cpu|--cpu)              CPU="$2"             ; checkVal $1 $2 ; shift 2 ;;
     -m|--memory)             MEMORY="$2"          ; checkVal $1 $2 ; shift 2 ;;
     -t|--build_timeout)      SD_BUILD_TIMEOUT="$2"; checkVal $1 $2 ; shift 2 ;;
+    -v|--launcher_version)   LAUNCHER_VERSION="$2"; checkVal $1 $2 ; shift 2 ;;
     -h|--help)               printUsage                           ; shift 1 ;;
     -*) echo "Unkown argument: \"$key\"" ; printUsage             ; exit 1  ;;
     *)                                                              break   ;;
@@ -129,6 +131,10 @@ if [[ -z "$SD_BUILD_TIMEOUT" ]]; then
   log "defaulting build timeout to 5400s";
   SD_BUILD_TIMEOUT=5400;
 fi
+if [[ -z "$LAUNCHER_VERSION" ]]; then
+  log "--launcher_version is a required argument";
+  printUsage;
+fi
 
 # Remove leading and trailing quotes from CPU and MEMORY
 CPU=`sed -e 's/^"//' -e 's/"$//' <<< "$CPU"`
@@ -160,7 +166,8 @@ sed -e "s|BUILD_CONTAINER|${BUILD_CONTAINER}|g;
         s|BUILD_TOKEN|${BUILD_TOKEN}|g;
         s|ID_WITH_PREFIX|${ID_WITH_PREFIX}|g;
         s|\"CPU\"|${CPU}|g;
-        s|\"MEMORY\"|${MEMORY}|g;" $HYPER_TEMPLATE > $HYPER_POD_SPEC;
+        s|\"MEMORY\"|${MEMORY}|g;
+        s|LAUNCHER_VERSION|${LAUNCHER_VERSION}|g;" $HYPER_TEMPLATE > $HYPER_POD_SPEC;
 
 log 'Running hyperctl...'
 res=`$HYPERCTL run --rm -a -p $HYPER_POD_SPEC`
