@@ -1,11 +1,14 @@
 shared:
-    image: centos
+    image: golang:1.13
+    environment:
+        GOPATH: /sd/workspace
+        GO111MODULE: off
 
 jobs:
     main:
         steps:
-            # To verify if the hyperctl-download script works
-            - hyperctl-download: bash -xe scripts/hyperctl-download.sh
+            # To verify if the hyperctl-build script works
+            - hyperctl-build: bash -xe scripts/hyperctl-build.sh
             - chmod: chmod +x ./hyperctl
             - test-hyperctl: ./hyperctl info -h
         requires:
@@ -13,7 +16,7 @@ jobs:
             - ~commit
     publish:
         steps:
-            - hyperctl-download: bash -xe scripts/hyperctl-download.sh
+            - hyperctl-build: bash -xe scripts/hyperctl-build.sh
             - chmod: chmod +x ./hyperctl
             - test-hyperctl: ./hyperctl info -h
             # Dependencies for the scripts; should make the scripts share steps in the future

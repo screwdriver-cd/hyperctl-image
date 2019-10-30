@@ -11,7 +11,7 @@ Run it through the pipeline
 Run the command under the root of this repository:
 
 ```bash
-docker run -v $(pwd):/tmp/src -ti centos /bin/bash -c "cd /tmp/src; bash -xe scripts/hyperctl-download.sh"
+docker run -v $(pwd):/tmp/src -ti centos /bin/bash -c "cd /tmp/src; bash -xe scripts/hyperctl-build.sh"
 ```
 The above command will create a `hyperctl` binary under current directory.
 
