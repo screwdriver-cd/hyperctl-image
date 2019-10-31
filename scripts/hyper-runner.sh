@@ -17,9 +17,8 @@ function cleanUp {
 }
 
 function cleanupWorkspaces {
-    echo "cleanup used workspaces..."
-    rm -rf /var/sd-workspaces/${ID_WITH_PREFIX}
-    $HYPERCTL rm builder-${ID_WITH_PREFIX}
+    echo "cleanup used vm..."
+    $HYPERCTL rm "builder-$ID_WITH_PREFIX"
 }
 
 function updateBuildStatus {
@@ -34,7 +33,7 @@ function updateBuildStatus {
     URL=$API_URI/v4/builds/$BUILD_ID
     echo "Updating build status: $URL"
     curl -X PUT -H "Authorization: Bearer $BUILD_TOKEN" -H "Content-Type: application/json" \
-    -d '{"status": "FAILURE", "statusMessage": "'"$ERROR"'"}' $URL
+    -d '{"status": "FAILURE", "statusMessage": "'"$ERROR"'"}' "$URL"
 }
 
 function log {
@@ -73,17 +72,17 @@ while [[ $# -gt 0 ]]
   key="$1"
 
   case $key in
-    -c|--container)          BUILD_CONTAINER="$2" ; checkVal $1 $2 ; shift 2 ;;
-    -a|--api_uri)            API_URI="$2"         ; checkVal $1 $2 ; shift 2 ;;
-    -b|--build_id)           BUILD_ID="$2"        ; checkVal $1 $2 ; shift 2 ;;
-    -s|--store_uri)          STORE_URI="$2"       ; checkVal $1 $2 ; shift 2 ;;
-    -ui|--ui_uri)            UI_URI="$2"          ; checkVal $1 $2 ; shift 2 ;;
-    -i|--id_with_prefix)     ID_WITH_PREFIX="$2"  ; checkVal $1 $2 ; shift 2 ;;
-    -u|--build_token)        BUILD_TOKEN="$2"     ; checkVal $1 $2 ; shift 2 ;;
-    -cpu|--cpu)              CPU="$2"             ; checkVal $1 $2 ; shift 2 ;;
-    -m|--memory)             MEMORY="$2"          ; checkVal $1 $2 ; shift 2 ;;
-    -t|--build_timeout)      SD_BUILD_TIMEOUT="$2"; checkVal $1 $2 ; shift 2 ;;
-    -v|--launcher_version)   LAUNCHER_VERSION="$2"; checkVal $1 $2 ; shift 2 ;;
+    -c|--container)          BUILD_CONTAINER="$2" ; checkVal "$1" "$2" ; shift 2 ;;
+    -a|--api_uri)            API_URI="$2"         ; checkVal "$1" "$2" ; shift 2 ;;
+    -b|--build_id)           BUILD_ID="$2"        ; checkVal "$1" "$2" ; shift 2 ;;
+    -s|--store_uri)          STORE_URI="$2"       ; checkVal "$1" "$2" ; shift 2 ;;
+    -ui|--ui_uri)            UI_URI="$2"          ; checkVal "$1" "$2" ; shift 2 ;;
+    -i|--id_with_prefix)     ID_WITH_PREFIX="$2"  ; checkVal "$1" "$2" ; shift 2 ;;
+    -u|--build_token)        BUILD_TOKEN="$2"     ; checkVal "$1" "$2" ; shift 2 ;;
+    -cpu|--cpu)              CPU="$2"             ; checkVal "$1" "$2" ; shift 2 ;;
+    -m|--memory)             MEMORY="$2"          ; checkVal "$1" "$2" ; shift 2 ;;
+    -t|--build_timeout)      SD_BUILD_TIMEOUT="$2"; checkVal "$1" "$2" ; shift 2 ;;
+    -v|--launcher_version)   LAUNCHER_VERSION="$2"; checkVal "$1" "$2" ; shift 2 ;;
     -h|--help)               printUsage                           ; shift 1 ;;
     -*) echo "Unkown argument: \"$key\"" ; printUsage             ; exit 1  ;;
     *)                                                              break   ;;
@@ -137,8 +136,8 @@ if [[ -z "$LAUNCHER_VERSION" ]]; then
 fi
 
 # Remove leading and trailing quotes from CPU and MEMORY
-CPU=`sed -e 's/^"//' -e 's/"$//' <<< "$CPU"`
-MEMORY=`sed -e 's/^"//' -e 's/"$//' <<< "$MEMORY"`
+CPU=$(sed -e 's/^"//' -e 's/"$//' <<< "$CPU")
+MEMORY=$(sed -e 's/^"//' -e 's/"$//' <<< "$MEMORY")
 
 # Copy over setup script to share mount sdlauncher
 cp /sd/setup.sh /opt/sd/
@@ -147,7 +146,7 @@ cp /sd/setup.sh /opt/sd/
 HYPERCTL=/usr/bin/hyperctl
 # Making sure hyperd is not crashed
 $HYPERCTL info
-if $HYPERCTL pull $BUILD_CONTAINER
+if $HYPERCTL pull "$BUILD_CONTAINER"
 then
     echo "Successfully pulled the image"
 else
@@ -170,5 +169,5 @@ sed -e "s|BUILD_CONTAINER|${BUILD_CONTAINER}|g;
         s|LAUNCHER_VERSION|${LAUNCHER_VERSION}|g;" $HYPER_TEMPLATE > $HYPER_POD_SPEC;
 
 log 'Running hyperctl...'
-res=`$HYPERCTL run --rm -a -p $HYPER_POD_SPEC`
+res=$($HYPERCTL run --rm -a -p $HYPER_POD_SPEC)
 log "Build finished with exit code $? : $res"
