@@ -2,6 +2,7 @@ shared:
     image: golang:1.13
     environment:
         GOPATH: /sd/workspace
+        # hyperhq/hyperd is not using go module so turning off the module explicitly
         GO111MODULE: off
 
 jobs:
@@ -20,7 +21,9 @@ jobs:
             - chmod: chmod +x ./hyperctl
             - test-hyperctl: ./hyperctl info -h
             # Dependencies for the scripts; should make the scripts share steps in the future
-            - install-dependencies: yum install -y git wget openssh-clients bzip2
+            - install-dependencies: |
+                apt-get update
+                apt-get install -y bzip2
             - setup-ci: git clone https://github.com/screwdriver-cd/toolbox.git ci
             - tag: ./ci/git-tag.sh
             - release: ./ci/git-release.sh
