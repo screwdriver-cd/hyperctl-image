@@ -45,14 +45,23 @@ function printUsage {
   USAGE="hyper-runner.sh --container <build_container>
                 --api_uri <sd_api_uri>
                 --build_id <build_id>
+                --job_id <job_id>
+                --event_id <event_id>
+                --pipeline_id <pipeline_id>
                 --store_uri <store_uri>
-                --ui_uri <ui_uri>
+                --ui_uri <sd_ui_uri>
                 --id_with_prefix <build_id_with_prefix>
                 --build_token <sd_token>
                 --cpu <cpu>
                 --memory <memory>
+                --build_timeout <seconds>
                 --launcher_version <launcher_version_tag>
-                [--build_timeout <seconds>]"
+                --cache_strategy <cache_strategy (disk | s3)>
+                --cache_path <cache_path (if cache_strategy is disk)>
+                --cache_compress <cache_compress>
+                --cache_md5check <cache_md5check>
+                --cache_max_size_mb <cache_max_size_mb>"
+
   log "$USAGE";
   exit 1;
 }
@@ -72,17 +81,25 @@ while [[ $# -gt 0 ]]
   key="$1"
 
   case $key in
-    -c|--container)          BUILD_CONTAINER="$2" ; checkVal "$1" "$2" ; shift 2 ;;
-    -a|--api_uri)            API_URI="$2"         ; checkVal "$1" "$2" ; shift 2 ;;
-    -b|--build_id)           BUILD_ID="$2"        ; checkVal "$1" "$2" ; shift 2 ;;
-    -s|--store_uri)          STORE_URI="$2"       ; checkVal "$1" "$2" ; shift 2 ;;
-    -ui|--ui_uri)            UI_URI="$2"          ; checkVal "$1" "$2" ; shift 2 ;;
-    -i|--id_with_prefix)     ID_WITH_PREFIX="$2"  ; checkVal "$1" "$2" ; shift 2 ;;
-    -u|--build_token)        BUILD_TOKEN="$2"     ; checkVal "$1" "$2" ; shift 2 ;;
-    -cpu|--cpu)              CPU="$2"             ; checkVal "$1" "$2" ; shift 2 ;;
-    -m|--memory)             MEMORY="$2"          ; checkVal "$1" "$2" ; shift 2 ;;
-    -t|--build_timeout)      SD_BUILD_TIMEOUT="$2"; checkVal "$1" "$2" ; shift 2 ;;
-    -v|--launcher_version)   LAUNCHER_VERSION="$2"; checkVal "$1" "$2" ; shift 2 ;;
+    -c|--container)          BUILD_CONTAINER="$2"   ; checkVal $1 $2 ; shift 2 ;;
+    -a|--api_uri)            API_URI="$2"           ; checkVal $1 $2 ; shift 2 ;;
+    -b|--build_id)           BUILD_ID="$2"          ; checkVal $1 $2 ; shift 2 ;;
+    -j|--job_id)             JOB_ID="$2"            ; checkVal $1 $2 ; shift 2 ;;
+    -e|--event_id)           EVENT_ID="$2"          ; checkVal $1 $2 ; shift 2 ;;
+    -p|--pipeline_id)        PIPELINE_ID="$2"       ; checkVal $1 $2 ; shift 2 ;;
+    -s|--store_uri)          STORE_URI="$2"         ; checkVal $1 $2 ; shift 2 ;;
+    -ui|--ui_uri)            UI_URI="$2"            ; checkVal $1 $2 ; shift 2 ;;
+    -i|--id_with_prefix)     ID_WITH_PREFIX="$2"    ; checkVal $1 $2 ; shift 2 ;;
+    -u|--build_token)        BUILD_TOKEN="$2"       ; checkVal $1 $2 ; shift 2 ;;
+    -cpu|--cpu)              CPU="$2"               ; checkVal $1 $2 ; shift 2 ;;
+    -m|--memory)             MEMORY="$2"            ; checkVal $1 $2 ; shift 2 ;;
+    -t|--build_timeout)      SD_BUILD_TIMEOUT="$2"  ; checkVal $1 $2 ; shift 2 ;;
+    -v|--launcher_version)   LAUNCHER_VERSION="$2"  ; checkVal $1 $2 ; shift 2 ;;
+    -cs|--cache_strategy)    CACHE_STRATEGY="$2"    ; checkVal $1 $2 ; shift 2 ;;
+    -chp|--cache_path)       CACHE_PATH="$2"        ; checkVal $1 $2 ; shift 2 ;;
+    -cc|--cache_compress)    CACHE_COMPRESS="$2"    ; checkVal $1 $2 ; shift 2 ;;
+    -cm5|--cache_md5check)   CACHE_MD5CHECK="$2"    ; checkVal $1 $2 ; shift 2 ;;
+    -cb|--cache_max_size_mb) CACHE_MAX_SIZE_MB="$2" ; checkVal $1 $2 ; shift 2 ;;
     -h|--help)               printUsage                           ; shift 1 ;;
     -*) echo "Unkown argument: \"$key\"" ; printUsage             ; exit 1  ;;
     *)                                                              break   ;;
@@ -102,6 +119,18 @@ if [[ -z "$API_URI" ]]; then
 fi
 if [[ -z "$BUILD_ID" ]]; then
   log "--build_id is a required argument";
+  printUsage;
+fi
+if [[ -z "$JOB_ID" ]]; then
+  log "--job_id is a required argument";
+  printUsage;
+fi
+if [[ -z "$EVENT_ID" ]]; then
+  log "--event_id is a required argument";
+  printUsage;
+fi
+if [[ -z "$PIPELINE_ID" ]]; then
+  log "--pipeline_id is a required argument";
   printUsage;
 fi
 if [[ -z "$STORE_URI" ]]; then
@@ -154,11 +183,20 @@ else
     exit 0
 fi
 
+DISK_CACHE_STRATEGY="disk"
 HYPER_TEMPLATE="/sd/hyper-pod-template.json"
 HYPER_POD_SPEC="/tmp/hyper-pod.json"
+
+if [[ "$CACHE_STRATEGY" == "$DISK_CACHE_STRATEGY" && ! -z "$CACHE_PATH" ]]; then
+  HYPER_TEMPLATE="/sd/hyper-pod-cache-volumes-template.json"
+fi
+
 sed -e "s|BUILD_CONTAINER|${BUILD_CONTAINER}|g;
         s|API_URI|${API_URI}|g;
         s|BUILD_ID|${BUILD_ID}|g;
+        s|JOB_ID|${JOB_ID}|g;
+        s|EVENT_ID|${EVENT_ID}|g;
+        s|PIPELINE_ID|${PIPELINE_ID}|g;
         s|SD_BUILD_TIMEOUT|${SD_BUILD_TIMEOUT}|g;
         s|STORE_URI|${STORE_URI}|g;
         s|UI_URI|${UI_URI}|g;
@@ -166,7 +204,12 @@ sed -e "s|BUILD_CONTAINER|${BUILD_CONTAINER}|g;
         s|ID_WITH_PREFIX|${ID_WITH_PREFIX}|g;
         s|\"CPU\"|${CPU}|g;
         s|\"MEMORY\"|${MEMORY}|g;
-        s|LAUNCHER_VERSION|${LAUNCHER_VERSION}|g;" $HYPER_TEMPLATE > $HYPER_POD_SPEC;
+        s|LAUNCHER_VERSION|${LAUNCHER_VERSION}|g;
+        s|CACHE_STRATEGY|${CACHE_STRATEGY}|g;
+        s|CACHE_PATH|${CACHE_PATH}|g;
+        s|CACHE_COMPRESS|${CACHE_COMPRESS}|g;
+        s|CACHE_MD5CHECK|${CACHE_MD5CHECK}|g;
+        s|CACHE_MAX_SIZE_MB|${CACHE_MAX_SIZE_MB}|g;" $HYPER_TEMPLATE > $HYPER_POD_SPEC;
 
 log 'Running hyperctl...'
 res=$($HYPERCTL run --rm -a -p $HYPER_POD_SPEC)

@@ -1,0 +1,73 @@
+{
+  "id": "builder-ID_WITH_PREFIX",
+  "hostname": "builder-ID_WITH_PREFIX",
+  "resource": {
+    "vcpu": "CPU",
+    "memory": "MEMORY"
+  },
+  "containers": [
+    {
+      "name": "ID_WITH_PREFIX",
+      "image": "BUILD_CONTAINER",
+      "entryPoint": [
+        "/opt/sd/tini",
+	      "--",
+	      "/bin/sh",
+	      "-c",
+	      "while ! [ -f /opt/sd/setup.sh ]; do sleep 1; done; /opt/sd/setup.sh && /opt/sd/run.sh \"BUILD_TOKEN\" \"API_URI\" \"STORE_URI\" \"SD_BUILD_TIMEOUT\" \"BUILD_ID\" \"UI_URI\" \"CACHE_STRATEGY\" \"/sdpipelinecache\" \"/sdjobcache\" \"/sdeventcache\" \"CACHE_COMPRESS\" \"CACHE_MD5CHECK\" \"CACHE_MAX_SIZE_MB\"",","
+      ],
+      "volumes": [
+			  {
+	        "path": "/opt/sd",
+	        "volume": "sdlauncher",
+	        "readOnly": true,
+				  "detail":
+	          {
+	            "name": "sdlauncher",
+	            "source": "/opt/screwdriver/sdlauncher/LAUNCHER_VERSION",
+	            "format" : "vfs"
+	          }
+	      },
+	      {
+		      "path": "/sdpipelinecache",
+	        "volume": "sd-pipeline-cache",
+		      "readOnly": false,
+	        "detail":
+	          {
+	            "name": "sd-pipeline-cache",
+	            "source": "CACHE_PATH/pipelines/PIPELINE_ID",
+	            "format" : "vfs"
+	          }
+	      },
+	      {
+	        "path": "/sdjobcache",
+	        "volume": "sd-job-cache",
+	        "readOnly": false,
+	        "detail":
+	          {
+	            "name": "sd-job-cache",
+		          "source": "CACHE_PATH/jobs/PIPELINE_ID/JOB_ID",
+	            "format" : "vfs"
+	          }
+	      },
+	      {
+	        "path": "/sdeventcache",
+	        "volume": "sd-event-cache",
+	        "readOnly": false,
+	        "detail":
+	          {
+	            "name": "sd-event-cache",
+	            "source": "CACHE_PATH/events/PIPELINE_ID/EVENT_ID",
+	            "format" : "vfs"
+	          }
+	      }
+      ],
+      "envs":  [
+        {
+	        "env": "SD_BASE_COMMAND_PATH",
+	        "value": "/sd/commands/"
+	      }
+      ]
+    }
+  ]
+}
