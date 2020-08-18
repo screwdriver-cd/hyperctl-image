@@ -102,9 +102,9 @@ while [[ $# -gt 0 ]]
     -cm5|--cache_md5check)        CACHE_MD5CHECK="$2"       ; checkVal $1 $2 ; shift 2 ;;
     -cb|--cache_max_size_mb)      CACHE_MAX_SIZE_MB="$2"    ; checkVal $1 $2 ; shift 2 ;;
     -cgt|--cache_max_go_threads)  CACHE_MAX_GO_THREADS="$2" ; checkVal $1 $2 ; shift 2 ;;
-    -h|--help)               printUsage                              ; shift 1 ;;
-    -*) echo "Unkown argument: \"$key\"" ; printUsage                ; exit 1  ;;
-    *)                                                                 break   ;;
+    -h|--help)                    printUsage                              ; shift 1 ;;
+    -*) echo "Unkown argument: \"$key\"" ; printUsage                     ; exit 1  ;;
+    *)                                                                      break   ;;
   esac
 done
 
