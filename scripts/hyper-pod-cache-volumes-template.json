@@ -14,7 +14,7 @@
 	      "--",
 	      "/bin/sh",
 	      "-c",
-	      "while ! [ -f /opt/sd/setup.sh ]; do sleep 1; done; /opt/sd/setup.sh && /opt/sd/run.sh \"BUILD_TOKEN\" \"API_URI\" \"STORE_URI\" \"SD_BUILD_TIMEOUT\" \"BUILD_ID\" \"UI_URI\" \"CACHE_STRATEGY\" \"/sdpipelinecache\" \"/sdjobcache\" \"/sdeventcache\" \"CACHE_COMPRESS\" \"CACHE_MD5CHECK\" \"CACHE_MAX_SIZE_MB\"",","
+	      "while ! [ -f /opt/sd/setup.sh ]; do sleep 1; done; /opt/sd/setup.sh && /opt/sd/run.sh \"BUILD_TOKEN\" \"API_URI\" \"STORE_URI\" \"SD_BUILD_TIMEOUT\" \"BUILD_ID\" \"UI_URI\" \"CACHE_STRATEGY\" \"/sdpipelinecache\" \"/sdjobcache\" \"/sdeventcache\" \"CACHE_COMPRESS\" \"CACHE_MD5CHECK\" \"CACHE_MAX_SIZE_MB\" \"CACHE_MAX_GO_THREADS\"",","
       ],
       "volumes": [
 			  {

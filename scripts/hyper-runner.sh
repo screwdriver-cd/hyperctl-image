@@ -60,7 +60,8 @@ function printUsage {
                 --cache_path <cache_path (if cache_strategy is disk)>
                 --cache_compress <cache_compress>
                 --cache_md5check <cache_md5check>
-                --cache_max_size_mb <cache_max_size_mb>"
+                --cache_max_size_mb <cache_max_size_mb>
+                --cache_max_go_threads <cache_max_go_threads>"
 
   log "$USAGE";
   exit 1;
@@ -81,28 +82,29 @@ while [[ $# -gt 0 ]]
   key="$1"
 
   case $key in
-    -c|--container)          BUILD_CONTAINER="$2"   ; checkVal $1 $2 ; shift 2 ;;
-    -a|--api_uri)            API_URI="$2"           ; checkVal $1 $2 ; shift 2 ;;
-    -b|--build_id)           BUILD_ID="$2"          ; checkVal $1 $2 ; shift 2 ;;
-    -j|--job_id)             JOB_ID="$2"            ; checkVal $1 $2 ; shift 2 ;;
-    -e|--event_id)           EVENT_ID="$2"          ; checkVal $1 $2 ; shift 2 ;;
-    -p|--pipeline_id)        PIPELINE_ID="$2"       ; checkVal $1 $2 ; shift 2 ;;
-    -s|--store_uri)          STORE_URI="$2"         ; checkVal $1 $2 ; shift 2 ;;
-    -ui|--ui_uri)            UI_URI="$2"            ; checkVal $1 $2 ; shift 2 ;;
-    -i|--id_with_prefix)     ID_WITH_PREFIX="$2"    ; checkVal $1 $2 ; shift 2 ;;
-    -u|--build_token)        BUILD_TOKEN="$2"       ; checkVal $1 $2 ; shift 2 ;;
-    -cpu|--cpu)              CPU="$2"               ; checkVal $1 $2 ; shift 2 ;;
-    -m|--memory)             MEMORY="$2"            ; checkVal $1 $2 ; shift 2 ;;
-    -t|--build_timeout)      SD_BUILD_TIMEOUT="$2"  ; checkVal $1 $2 ; shift 2 ;;
-    -v|--launcher_version)   LAUNCHER_VERSION="$2"  ; checkVal $1 $2 ; shift 2 ;;
-    -cs|--cache_strategy)    CACHE_STRATEGY="$2"    ; checkVal $1 $2 ; shift 2 ;;
-    -chp|--cache_path)       CACHE_PATH="$2"        ; checkVal $1 $2 ; shift 2 ;;
-    -cc|--cache_compress)    CACHE_COMPRESS="$2"    ; checkVal $1 $2 ; shift 2 ;;
-    -cm5|--cache_md5check)   CACHE_MD5CHECK="$2"    ; checkVal $1 $2 ; shift 2 ;;
-    -cb|--cache_max_size_mb) CACHE_MAX_SIZE_MB="$2" ; checkVal $1 $2 ; shift 2 ;;
-    -h|--help)               printUsage                           ; shift 1 ;;
-    -*) echo "Unkown argument: \"$key\"" ; printUsage             ; exit 1  ;;
-    *)                                                              break   ;;
+    -c|--container)               BUILD_CONTAINER="$2"      ; checkVal $1 $2 ; shift 2 ;;
+    -a|--api_uri)                 API_URI="$2"              ; checkVal $1 $2 ; shift 2 ;;
+    -b|--build_id)                BUILD_ID="$2"             ; checkVal $1 $2 ; shift 2 ;;
+    -j|--job_id)                  JOB_ID="$2"               ; checkVal $1 $2 ; shift 2 ;;
+    -e|--event_id)                EVENT_ID="$2"             ; checkVal $1 $2 ; shift 2 ;;
+    -p|--pipeline_id)             PIPELINE_ID="$2"          ; checkVal $1 $2 ; shift 2 ;;
+    -s|--store_uri)               STORE_URI="$2"            ; checkVal $1 $2 ; shift 2 ;;
+    -ui|--ui_uri)                 UI_URI="$2"               ; checkVal $1 $2 ; shift 2 ;;
+    -i|--id_with_prefix)          ID_WITH_PREFIX="$2"       ; checkVal $1 $2 ; shift 2 ;;
+    -u|--build_token)             BUILD_TOKEN="$2"          ; checkVal $1 $2 ; shift 2 ;;
+    -cpu|--cpu)                   CPU="$2"                  ; checkVal $1 $2 ; shift 2 ;;
+    -m|--memory)                  MEMORY="$2"               ; checkVal $1 $2 ; shift 2 ;;
+    -t|--build_timeout)           SD_BUILD_TIMEOUT="$2"     ; checkVal $1 $2 ; shift 2 ;;
+    -v|--launcher_version)        LAUNCHER_VERSION="$2"     ; checkVal $1 $2 ; shift 2 ;;
+    -cs|--cache_strategy)         CACHE_STRATEGY="$2"       ; checkVal $1 $2 ; shift 2 ;;
+    -chp|--cache_path)            CACHE_PATH="$2"           ; checkVal $1 $2 ; shift 2 ;;
+    -cc|--cache_compress)         CACHE_COMPRESS="$2"       ; checkVal $1 $2 ; shift 2 ;;
+    -cm5|--cache_md5check)        CACHE_MD5CHECK="$2"       ; checkVal $1 $2 ; shift 2 ;;
+    -cb|--cache_max_size_mb)      CACHE_MAX_SIZE_MB="$2"    ; checkVal $1 $2 ; shift 2 ;;
+    -cgt|--cache_max_go_threads)  CACHE_MAX_GO_THREADS="$2" ; checkVal $1 $2 ; shift 2 ;;
+    -h|--help)               printUsage                              ; shift 1 ;;
+    -*) echo "Unkown argument: \"$key\"" ; printUsage                ; exit 1  ;;
+    *)                                                                 break   ;;
   esac
 done
 
@@ -209,7 +211,8 @@ sed -e "s|BUILD_CONTAINER|${BUILD_CONTAINER}|g;
         s|CACHE_PATH|${CACHE_PATH}|g;
         s|CACHE_COMPRESS|${CACHE_COMPRESS}|g;
         s|CACHE_MD5CHECK|${CACHE_MD5CHECK}|g;
-        s|CACHE_MAX_SIZE_MB|${CACHE_MAX_SIZE_MB}|g;" $HYPER_TEMPLATE > $HYPER_POD_SPEC;
+        s|CACHE_MAX_SIZE_MB|${CACHE_MAX_SIZE_MB}|g;
+        s|CACHE_MAX_GO_THREADS|${CACHE_MAX_GO_THREADS}|g;" $HYPER_TEMPLATE > $HYPER_POD_SPEC;
 
 log 'Running hyperctl...'
 res=$($HYPERCTL run --rm -a -p $HYPER_POD_SPEC)
